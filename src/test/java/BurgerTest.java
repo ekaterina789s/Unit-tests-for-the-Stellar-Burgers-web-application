@@ -7,6 +7,7 @@ import praktikum.Bun;
 import praktikum.Burger;
 import praktikum.Ingredient;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,6 +38,13 @@ public class BurgerTest {
     public void setBunsTest() {
         burger.setBuns(bunMock);
         assertSame(bunMock, burger.bun);
+    }
+
+    @Test
+    public void addIngredientTest() {
+        int beforeSize = burger.ingredients.size();
+        burger.addIngredient(ingredientMock);
+        assertEquals(beforeSize + 1, burger.ingredients.size());
     }
 }
 
