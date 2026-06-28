@@ -1,10 +1,13 @@
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import praktikum.Bun;
 import praktikum.Burger;
 import praktikum.Ingredient;
+
+import static org.junit.Assert.assertSame;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BurgerTest {
@@ -29,6 +32,14 @@ public class BurgerTest {
         // Не делаем заглушку для getPrice() здесь: она нужна только в тестах, где реально считаем цену
         burger.setBuns(bunMock);
     }
+
+    @Test
+    public void setBunsTest() {
+        burger.setBuns(bunMock);
+        assertSame(bunMock, burger.bun);
+    }
+}
+
 
 
 
