@@ -7,8 +7,7 @@ import praktikum.Bun;
 import praktikum.Burger;
 import praktikum.Ingredient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BurgerTest {
@@ -45,6 +44,18 @@ public class BurgerTest {
         int beforeSize = burger.ingredients.size();
         burger.addIngredient(ingredientMock);
         assertEquals(beforeSize + 1, burger.ingredients.size());
+    }
+
+    @Test
+    public void removeIngredientTest() {
+        // Никаких заглушек для цены: тест только про удаление из списка
+        burger.addIngredient(ingredientMock);
+
+        int beforeSize = burger.ingredients.size();
+        burger.removeIngredient(0);
+
+        assertEquals(beforeSize - 1, burger.ingredients.size());
+        assertFalse(burger.ingredients.contains(ingredientMock));
     }
 }
 
