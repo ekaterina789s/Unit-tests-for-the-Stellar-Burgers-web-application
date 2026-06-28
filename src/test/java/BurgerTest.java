@@ -1,3 +1,4 @@
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -21,6 +22,13 @@ public class BurgerTest {
     Ingredient ingredientSecond;
     @Mock
     Ingredient ingredientThird;
+
+    @Before
+    public void setUp() {
+        burger = new Burger();
+        // Не делаем заглушку для getPrice() здесь: она нужна только в тестах, где реально считаем цену
+        burger.setBuns(bunMock);
+    }
 
 
 
