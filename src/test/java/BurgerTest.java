@@ -92,6 +92,23 @@ public class BurgerTest {
         // Assert: 2 булки по 50 = 100, ингредиентов нет, значит цена 100
         assertEquals(100.0f, price, 0.01f);
     }
+
+    @Test
+    public void getPrice_withIngredients() {
+        // Arrange
+        when(bunMock.getPrice()).thenReturn(50.0f);
+        when(ingredientFirst.getPrice()).thenReturn(10.0f);
+        when(ingredientSecond.getPrice()).thenReturn(20.0f);
+
+        burger.addIngredient(ingredientFirst);
+        burger.addIngredient(ingredientSecond);
+
+        // Act
+        float price = burger.getPrice();
+
+        // Assert: (50 * 2) + 10 + 20 = 130
+        assertEquals(130.0f, price, 0.01f);
+    }
 }
 
 
