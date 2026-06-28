@@ -10,6 +10,7 @@ import praktikum.Ingredient;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BurgerTest {
@@ -77,6 +78,19 @@ public class BurgerTest {
         assertSame(ingredientSecond, list.get(0)); // на первом месте теперь второй ингредиент
         assertSame(ingredientFirst, list.get(1));  // первый сдвинулся на второе место
         assertSame(ingredientThird, list.get(2)); // третий остался на третьем месте
+    }
+
+    @Test
+    public void getPrice_emptyIngredients() {
+        // Arrange
+        when(bunMock.getPrice()).thenReturn(50.0f);
+        // у бургера уже есть булка из setUp, ингредиентов нет
+
+        // Act
+        float price = burger.getPrice();
+
+        // Assert: 2 булки по 50 = 100, ингредиентов нет, значит цена 100
+        assertEquals(100.0f, price, 0.01f);
     }
 }
 
