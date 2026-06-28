@@ -109,6 +109,27 @@ public class BurgerTest {
         // Assert: (50 * 2) + 10 + 20 = 130
         assertEquals(130.0f, price, 0.01f);
     }
+
+    @Test
+    public void moveIngredient_doesNotChangeTotalPrice() {
+        // Arrange
+        when(bunMock.getPrice()).thenReturn(50.0f);
+        when(ingredientFirst.getPrice()).thenReturn(15.0f);
+        when(ingredientSecond.getPrice()).thenReturn(25.0f);
+
+        burger.addIngredient(ingredientFirst);
+        burger.addIngredient(ingredientSecond);
+
+        float priceBefore = burger.getPrice(); //(50*2) + 15 + 25 = 140
+
+        // Act: меняем порядок ингредиентов
+        burger.moveIngredient(0, 1);
+
+        float priceAfter = burger.getPrice();  //состав тот же, значит цена должна остаться той же
+
+        // Assert
+        assertEquals(priceBefore, priceAfter, 0.01f);
+    }
 }
 
 
