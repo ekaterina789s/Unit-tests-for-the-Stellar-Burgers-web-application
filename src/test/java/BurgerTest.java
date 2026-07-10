@@ -58,6 +58,13 @@ public class BurgerTest {
     }
 
     @Test
+    public void shouldRemoveIngredientAtGivenIndex() {
+        burger.addIngredient(ingredientMock);
+        burger.removeIngredient(0);
+        assertFalse(burger.ingredients.contains(ingredientMock));
+    }
+
+    @Test
     public void moveIngredientTest() {
         // Arrange: готовим список [ingredientFirst, ingredientSecond, ingredientThird]
         burger.addIngredient(ingredientFirst);
