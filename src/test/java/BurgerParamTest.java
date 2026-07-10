@@ -3,6 +3,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
 import praktikum.Bun;
 import praktikum.Burger;
 import praktikum.Ingredient;
@@ -12,48 +13,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
+
 @RunWith(Parameterized.class)
 public class BurgerParamTest {
 
+    //теперь в параметрах не сами объекты, а данные для их мокирования
     private final String bunName;
     private final float bunPrice;
-    private final List<Ingredient> ingredients;
+    private final List<IngredientMockData> ingredientsData;
+    private final String expectedReceipt;
 
-    public BurgerParamTest(String bunName, float bunPrice, List<Ingredient> ingredients) {
+    public BurgerParamTest(String bunName, float bunPrice, List<IngredientMockData> ingredientsData, String expectedReceipt) {
         this.bunName = bunName;
         this.bunPrice = bunPrice;
-        this.ingredients = ingredients;
-    }
-
-    @Parameterized.Parameters(name = "receipt_test_{index}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                //бургер только с булочкой
-                {
-                        "Black Bun",
-                        100f,
-                        new ArrayList<>()
-                },
-
-                //бургер с одним ингредиентом
-                {
-                        "White Bun",
-                        200f,
-                        Arrays.asList(
-                                new Ingredient(IngredientType.SAUCE, "sour cream", 200)
-                        )
-                },
-
-                //бургер с несколькими ингредиентами
-                {
-                        "Red Bun",
-                        300f,
-                        Arrays.asList(
-                                new Ingredient(IngredientType.FILLING, "cutlet", 100),
-                                new Ingredient(IngredientType.SAUCE, "hot sauce", 100)
-                        )
-                }
-        });
+        this.ingredientsData = ingredientsData;
+        this.expectedReceipt = expectedReceipt;
     }
 
     private Burger burger;
@@ -61,59 +36,87 @@ public class BurgerParamTest {
     @Before
     public void setUp() {
         burger = new Burger();
-        Bun bun = new Bun(bunName, bunPrice);
-        burger.setBuns(bun);
 
-        for (Ingredient ingredient : ingredients) {
-            burger.addIngredient(ingredient);
+        //создаем мок булки и настраиваем его
+        Bun bunMock = Mockito.mock(Bun.class);
+        when(bunMock.getName()).thenReturn(bunName);
+        when(bunMock.getPrice()).thenReturn(bunPrice);
+        burger.setBuns(bunMock);
+
+        //создаем моки ингредиентов и добавляем в бургер
+        for (IngredientMockData data : ingredientsData) {
+            Ingredient ingMock = Mockito.mock(Ingredient.class);
+            when(ingMock.getType()).thenReturn(data.type);
+            when(ingMock.getName()).thenReturn(data.name);
+            when(ingMock.getPrice()).thenReturn(data.price);
+            burger.addIngredient(ingMock);
         }
+    }
+
+    @Parameterized.Parameters(name = "receipt_test_{index}")
+    public static Collection<Object[]> data() {
+        String ls = System.lineSeparator();
+
+        return Arrays.asList(new Object[][]{
+                //бургер только с булкой
+                {
+                        "Black Bun",
+                        100f,
+                        new ArrayList<>(),
+                        "(==== Black Bun ====" + ls +
+                                "(==== Black Bun ====" + ls +
+                                ls +
+                                "Price: " + String.format("%.6f", 100f * 2) + ls
+                },
+
+                //бургер с одним ингредиентом
+                {
+                        "White Bun",
+                        200f,
+                        Arrays.asList(new IngredientMockData(IngredientType.SAUCE, "sour cream", 200f)),
+                        "(==== White Bun ====" + ls +
+                                "= sauce sour cream =" + ls +
+                                "(==== White Bun ====" + ls +
+                                ls +
+                                "Price: " + String.format("%.6f", (200f * 2 + 200f)) + ls
+                },
+
+                //бургер с несколькими ингредиентами
+                {
+                        "Red Bun",
+                        300f,
+                        Arrays.asList(
+                                new IngredientMockData(IngredientType.FILLING, "cutlet", 100f),
+                                new IngredientMockData(IngredientType.SAUCE, "hot sauce", 100f)
+                        ),
+                        "(==== Red Bun ====" + ls +
+                                "= filling cutlet =" + ls +
+                                "= sauce hot sauce =" + ls +
+                                "(==== Red Bun ====" + ls +
+                                ls +
+                                "Price: " + String.format("%.6f", (300f * 2 + 100f + 100f)) + ls
+                }
+        });
     }
 
     @Test
     public void testGetReceipt() {
         String actual = burger.getReceipt();
-        String expected = buildExpectedReceipt(bunName, bunPrice, ingredients);
-
-        //нормализуем переносы: превращаем \r\n и \r в \n (так сравнение будет одинаковым на всех ОС)
-        String normalizedActual = actual.replace("\r\n", "\n").replace("\r", "\n");
-        String normalizedExpected = expected.replace("\r\n", "\n").replace("\r", "\n");
-
-        Assert.assertEquals(normalizedExpected, normalizedActual);
+        Assert.assertEquals(expectedReceipt, actual);
     }
 
-    //собираем ожидаемый чек по тем же правилам, что и в getReceipt()
-    private String buildExpectedReceipt(String bunName, float bunPrice, List<Ingredient> ingredients) {
-        String ls = "\n";
+    //вспомогательный класс-контейнер для данных ингредиента (этот маленький класс живет только внутри BurgerParamTest)
+    private static class IngredientMockData {
+        final IngredientType type;
+        final String name;
+        final float price;
 
-        StringBuilder sb = new StringBuilder();
-
-        //первая булочка
-        sb.append("(==== ").append(bunName).append(" ====").append(ls);
-
-        //ингредиенты: формат "= {type} {name} ="
-        for (Ingredient ing : ingredients) {
-            String typeStr = ing.getType().toString().toLowerCase();
-            sb.append("= ").append(typeStr).append(" ").append(ing.getName()).append(" =").append(ls);
+        IngredientMockData(IngredientType type, String name, float price) {
+            this.type = type;
+            this.name = name;
+            this.price = price;
         }
-
-        //вторая булочка
-        sb.append("(==== ").append(bunName).append(" ====").append(ls);
-
-        //пустая строка
-        sb.append(ls);
-
-        //здесь считаем цену
-        float totalPrice = bunPrice * 2;
-        for (Ingredient ing : ingredients) {
-            totalPrice += ing.getPrice();
-        }
-
-        //цена с 6 знаками после запятой — как в String.format("%f")
-        sb.append("Price: ").append(String.format("%.6f", totalPrice)).append(ls);
-
-        return sb.toString();
     }
-
 }
 
 
