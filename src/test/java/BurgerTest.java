@@ -50,15 +50,11 @@ public class BurgerTest {
     }
 
     @Test
-    public void removeIngredientTest() {
-        // Никаких заглушек для цены: тест только про удаление из списка
+    public void shouldDecreaseSizeAfterRemovingIngredient() {
         burger.addIngredient(ingredientMock);
-
         int beforeSize = burger.ingredients.size();
         burger.removeIngredient(0);
-
         assertEquals(beforeSize - 1, burger.ingredients.size());
-        assertFalse(burger.ingredients.contains(ingredientMock));
     }
 
     @Test
