@@ -82,7 +82,7 @@ public class BurgerTest {
     }
 
     @Test
-    public void getPrice_emptyIngredients() {
+    public void getPriceEmptyIngredients() {
         // Arrange
         when(bunMock.getPrice()).thenReturn(50.0f);
         // у бургера уже есть булка из setUp, ингредиентов нет
@@ -95,7 +95,7 @@ public class BurgerTest {
     }
 
     @Test
-    public void getPrice_withIngredients() {
+    public void getPriceWithIngredients() {
         // Arrange
         when(bunMock.getPrice()).thenReturn(50.0f);
         when(ingredientFirst.getPrice()).thenReturn(10.0f);
@@ -112,7 +112,7 @@ public class BurgerTest {
     }
 
     @Test
-    public void moveIngredient_doesNotChangeTotalPrice() {
+    public void moveIngredientDoesNotChangeTotalPrice() {
         // Arrange
         when(bunMock.getPrice()).thenReturn(50.0f);
         when(ingredientFirst.getPrice()).thenReturn(15.0f);
