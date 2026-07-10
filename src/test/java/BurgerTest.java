@@ -74,13 +74,11 @@ public class BurgerTest {
         // Act: перемещаем ingredientSecond (индекс 1) в начало (индекс 0)
         burger.moveIngredient(1, 0);
 
-        // Assert: проверяем, что порядок реально изменился
-        List<Ingredient> list = burger.ingredients;
-        assertEquals(3, list.size());
-
-        assertSame(ingredientSecond, list.get(0)); // на первом месте теперь второй ингредиент
-        assertSame(ingredientFirst, list.get(1));  // первый сдвинулся на второе место
-        assertSame(ingredientThird, list.get(2)); // третий остался на третьем месте
+        // Assert: один ассерт — сравниваем весь список целиком
+        assertEquals(
+                List.of(ingredientSecond, ingredientFirst, ingredientThird),
+                burger.ingredients
+        );
     }
 
     @Test
